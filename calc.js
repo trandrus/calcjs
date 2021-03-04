@@ -64,11 +64,11 @@ $(document).on('click', '#add', function(event){
 		return;
 	}
 	
-	//only used for the adaptive
-	var F = $('#results td').first().next().next().next().next().next().text();
+	//this is only used in the adaptive
+	/*var F = $('#results td').first().next().next().next().next().next().text();
 	var P = $('#results td').first().next().next().next().next().next().next().text();
 	var W = $('#results td').first().next().next().next().next().next().next().next().text();
-	var E = $('#results td').first().next().next().next().next().next().next().next().next().text();
+	var E = $('#results td').first().next().next().next().next().next().next().next().next().text();*/
 	
 	var q = "n"; //this is the alpha calculator
 	

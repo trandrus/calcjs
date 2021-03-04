@@ -1,10 +1,8 @@
 $(document).on('focusout', '#ecrlow, #ecrhigh', function(event){
 	event.preventDefault();
 	
-	//alert('test');
-	
 	if ($('#ecrlow').val() && $('#ecrhigh').val()) {
-		//alert('test');
+	
 		$('#tutorial').remove();
 	}
 	

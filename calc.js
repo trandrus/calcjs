@@ -8,6 +8,7 @@ $(document).on('focusout', '#ecrlow, #ecrhigh', function(event){
 		$('#tutorial').remove();
 	}
 	
+	//determnine if the gloabal cals are within range
 	healthy();
 	
 });

@@ -1,3 +1,5 @@
+
+//remove the call to the tutorial when Caloric Range is full
 $(document).on('focusout', '#ecrlow, #ecrhigh', function(event){
 	event.preventDefault();
 	
@@ -12,8 +14,8 @@ $(document).on('focusout', '#ecrlow, #ecrhigh', function(event){
 
 //Reset event for calculator
 $(document).on('click', '#reset', function(event){
-	//alert('reset');
 	event.preventDefault();
+	
 	var r = confirm("Are you sure you want to reset the calculator?");
 	if (r == true) {
 		$('#calculator').find('tbody').empty();
@@ -40,10 +42,11 @@ $(document).on('click', '#reset', function(event){
 	}
 });
 
-//Click event for the plus icon
+//Click event for the Add Resource button
 $(document).on('click', '#add', function(event){
 	event.preventDefault();
 	
+	//validation before you can add resources
 	var low = $('#ecrlow').val();
 	var high = $('#ecrhigh').val();
 	
@@ -60,16 +63,15 @@ $(document).on('click', '#add', function(event){
 		return;
 	}
 	
+	//only used for the adaptive
 	var F = $('#results td').first().next().next().next().next().next().text();
 	var P = $('#results td').first().next().next().next().next().next().next().text();
 	var W = $('#results td').first().next().next().next().next().next().next().next().text();
 	var E = $('#results td').first().next().next().next().next().next().next().next().next().text();
 	
-	var q = "n";
+	var q = "n"; //this is the alpha calculator
 	
-	//alert('F is'+F);
-	//alert('P is'+P);
-	
+	//this is only used in the adaptive
 	/*if(F>50 || F=='∞') {
 		q = "f";		
 	} else if(P>30 || F=='∞') {
@@ -78,8 +80,6 @@ $(document).on('click', '#add', function(event){
 		q = "e";
 	}*/
 	
-	//alert(q);
-	
 	$.ajax({
 	  url: "handlers/add"+q+".php",
 	  cache: false
@@ -87,29 +87,31 @@ $(document).on('click', '#add', function(event){
 	  .done(function(html) {
 		$("#calculator tbody").append(html);
 	  });
-	
 });
 
 //Click event for delete button and handlers
 $(document).on('click', 'a.delete', function(event){
 	event.preventDefault();
-  
-	/*if($('#updateevent').html()) {
-		alert('Please wait until updating before removing resource.');
-		return;
-	}*/
 	
 	var r = confirm("Are you sure you want to delete this resource?");
 	if (r == true) {
 		$(this).closest('tr').remove();
 	}
+	
+	//aggregate column
 	agg();
+	
+	//build an expression
 	express($('#results td').first().next());
+	
+	//determnine if the gloabal cals are within range
 	healthy();
 });
 
+//open the modification box
 $(document).on('click', 'a.mod', function(event){
 	event.preventDefault();
+	
 	var c = $(this).closest("td").next().find("select").val();
 	if (c == "choose") {
 		alert("Please choose a resource.");
@@ -117,24 +119,19 @@ $(document).on('click', 'a.mod', function(event){
 		return;
 	}
 	
-	/*if(!$('#updating').text()) {
-		$('#updating').html('<a id="updateevent" href="#"><img src="images/update.png" /></a>');
-	}*/
-	
 	$(this).closest("td").html('<input class="modinput" type="text" value="" maxlength="6" />');
 });
 
-
+//evaluate all modification boxes
 $(document).on('click', '#updateevent', function(event){
 	event.preventDefault();
+	
 	$('#calculator .u').each(function() {
 			
 		var data = $(this).html();
 		var str = 'input';	
 		
 		var value = parseFloat($(this).find('input').val());
-		
-		//alert(data);
 		
 		if(data.indexOf(str) == 1 && !isNaN(value) && value > 0) {
 			
@@ -155,25 +152,27 @@ $(document).on('click', '#updateevent', function(event){
 			
 			cell = parseFloat($(this).next().next().next().next().next().text());
 			dec = factor*cell;
-			$(this).next().next().next().next().next().text(dec.toFixed(2));
-			
-		} else {
-			
-		}
+			$(this).next().next().next().next().next().text(dec.toFixed(2));	
+		} 
 		
 		$(this).empty();
 		$(this).html('<a class="mod" href="#"><img src="images/scaleicon.png" /></a>');
 		
-		//$('#updateevent img').remove();
+		//aggregate columns
 		agg();
+		
 		//Build an expression
 		express($('#results td').first().next());
+		
+		//determnine if the gloabal cals are within range
 		healthy();
 	});	
 });
 
+//the change event for any resource
 $(document).on('change', '.resources', function(event){
 	event.preventDefault();
+	
 	//Get the value of the select
 	var c = $(this).val();
 	
@@ -195,12 +194,13 @@ $(document).on('change', '.resources', function(event){
 		$(this).closest('td').next().next().next().next().next().next().next().removeClass();
 		$(this).closest('td').next().next().next().next().next().next().next().next().removeClass();
 		
-		//Aggregate the matrix
+		//aggregate columns
 		agg();
 		
 		//Build an expression
 		express($('#results td').first().next());
 		
+		//determnine if the gloabal cals are within range
 		healthy();
 
 		return;
@@ -238,22 +238,23 @@ $(document).on('change', '.resources', function(event){
 		$(that).closest('td').next().next().next().next().next().next().next().html();
 		$(that).closest('td').next().next().next().next().next().next().next().next().html();
 		
-		//Aggregate the matrix
-		//
-		
-		//Build an expression
+		//build an expression in the calculator
 		express($(that).closest('td').next());
+		
+		//aggregate columns
 		agg();
-		//Build an expression
+		
+		//Build an expression in the results
 		express($('#results td').first().next());
 		
+		//determnine if the gloabal cals are within range
 		healthy();
 	}});
 });	
 
-
+//aggregates columns
 function agg () {
-//alert('agg');
+	
 	//Reset the composite
 	$('#results td').first().next().text('0');
 	$('#results td').first().next().next().text('0');
@@ -268,6 +269,7 @@ function agg () {
 	
 	//Traverses column 1 downward and aggregates into the composite
 	$('td.c1').each(function() {
+		
 		if($(this).text()) {
 			
 			var num, ans;
@@ -277,7 +279,6 @@ function agg () {
 			ans = parseFloat($(this).text())+num;
 			
 			$('#results td').first().next().text(ans.toFixed(2));
-			//
 		}
 	});
 	
@@ -328,10 +329,9 @@ function agg () {
 	});			
 }
 
-
-
+//accepts an object and creates an expression on the right side of the object
 function express (obj) {
-	//alert('express');
+	
 	//Create components as mathematical variables
 	var m = parseFloat($(obj).text());
 	var c = parseFloat($(obj).next().text());
@@ -419,8 +419,9 @@ function express (obj) {
 	}	
 }
 
+//determines whether the global calories is within the Caloric Range and displays a color
 function healthy ()	{
-	//alert('healthy');
+	
 	var ans = parseFloat($('#range').text());
 	var lin = parseFloat($('#ecrlow').val());
 	var lia = parseFloat($('#ecrhigh').val());
@@ -429,9 +430,9 @@ function healthy ()	{
 		$('#range').removeClass();
 		$('#range').addClass('under');
 	}   else {
-			$('#range').removeClass();
-			$('#range').addClass('over');
-		}
+		$('#range').removeClass();
+		$('#range').addClass('over');
+	}
 	
 	var healthy = $('#range').hasClass('under');
 	
@@ -448,6 +449,7 @@ function healthy ()	{
 	
 }
 
+//prompt users before they leave
 $(window).bind('beforeunload', function(){
   return 'Leave?';
 });

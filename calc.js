@@ -362,7 +362,8 @@ function express (obj) {
 	if(isNaN(E)) {
 		E = Infinity;
 	}
-
+	
+	//display expression
 	//F
 	if(!isFinite(F)) {
 		$(obj).next().next().next().next().html('&infin;');

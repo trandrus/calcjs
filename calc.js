@@ -81,6 +81,7 @@ $(document).on('click', '#add', function(event){
 		q = "e";
 	}*/
 	
+	//get data from the handler and append to the calculator
 	$.ajax({
 	  url: "handlers/add"+q+".php",
 	  cache: false

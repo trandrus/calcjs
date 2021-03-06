@@ -13,6 +13,7 @@ $(document).on('focusout', '#ecrlow, #ecrhigh', function(event){
 	
 });
 
+
 //Reset event for calculator
 $(document).on('click', '#reset', function(event){
 	event.preventDefault();
